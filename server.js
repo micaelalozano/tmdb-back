@@ -12,7 +12,7 @@ app.use(express.static("src"));
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://tmdb-by-micaelalozano.vercel.app",
     methods: ["GET", "POST", "DELETE", "OPTIONS"],
     credentials: true,
   })
