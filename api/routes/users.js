@@ -9,6 +9,14 @@ router.post("/", (req, res) => {
   const { username, name, lastname, email, password, imagen } = req.body;
   Users.create({ username, name, lastname, email, password, imagen }).then(
     (data) => {
+      const user = {
+        username: data.username,
+        name: data.name,
+        lastname: data.lastname,
+        email: data.email,
+        imagen: data.imagen,
+      };
+      localStorage.setItem("user", JSON.stringify(user));
       res.status(201).send(data);
     }
   );
@@ -69,8 +77,12 @@ router.post("/login", (req, res) => {
       // Crear una sesión en el servidor
       req.session.user = payload;
 
-      // Guardar la información de la sesión en LocalStorage
-      localStorage.setItem("session", JSON.stringify(req.session));
+      // Crear el objeto session y almacenarlo en localStorage
+      const session = {
+        token: generateToken(payload),
+        user: payload
+      };
+      localStorage.setItem("session", JSON.stringify(session));
 
       res.send(payload);
     });
