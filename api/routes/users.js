@@ -66,9 +66,11 @@ router.post("/login", (req, res) => {
         imagen: user.imagen,
       };
 
-      const token = generateToken(payload);
-      console.log(token);
-      res.cookie("token", token);
+      // Crear una sesión en el servidor
+      req.session.user = payload;
+
+      // Guardar la información de la sesión en LocalStorage
+      localStorage.setItem("session", JSON.stringify(req.session));
 
       res.send(payload);
     });
@@ -82,10 +84,19 @@ router.get("/ruta/me", validateAuth, (req, res) => {
 });
 
 // Esto seria /secret (usuario logueado en el momento)
-router.get("/ruta/perfil", validateAuth, (req, res) => {
-  res.send(req.user);
+router.get("/ruta/perfil", (req, res) => {
+  router.get("/user", (req, res) => {
+    // Comprobar si hay una sesión activa en el servidor
+    if (!req.session.user) return res.sendStatus(401);
+
+    // Obtener la información del usuario de la sesión
+    const user = req.session.user;
+
+    res.send(user);
+  });
 });
 
+//Cerrar Sesion
 router.post("/logout", (req, res) => {
   res.clearCookie("token");
 
