@@ -9,14 +9,6 @@ router.post("/", (req, res) => {
   const { username, name, lastname, email, password, imagen } = req.body;
   Users.create({ username, name, lastname, email, password, imagen }).then(
     (data) => {
-      const user = {
-        username: data.username,
-        name: data.name,
-        lastname: data.lastname,
-        email: data.email,
-        imagen: data.imagen,
-      };
-      localStorage.setItem("user", JSON.stringify(user));
       res.status(201).send(data);
     }
   );
@@ -74,15 +66,9 @@ router.post("/login", (req, res) => {
         imagen: user.imagen,
       };
 
-      // Crear una sesión en el servidor
-      req.session.user = payload;
-
-      // Crear el objeto session y almacenarlo en localStorage
-      const session = {
-        token: generateToken(payload),
-        user: payload
-      };
-      localStorage.setItem("session", JSON.stringify(session));
+      const token = generateToken(payload);
+      console.log(token);
+      res.cookie("token", token);
 
       res.send(payload);
     });
@@ -96,16 +82,8 @@ router.get("/ruta/me", validateAuth, (req, res) => {
 });
 
 // Esto seria /secret (usuario logueado en el momento)
-router.get("/ruta/perfil", (req, res) => {
-  router.get("/user", (req, res) => {
-    // Comprobar si hay una sesión activa en el servidor
-    if (!req.session.user) return res.sendStatus(401);
-
-    // Obtener la información del usuario de la sesión
-    const user = req.session.user;
-
-    res.send(user);
-  });
+router.get("/ruta/perfil", validateAuth, (req, res) => {
+  res.send(req.user);
 });
 
 //Cerrar Sesion
