@@ -35,6 +35,17 @@ router.put("/:id", (req, res) => {
   const { id } = req.params;
   const { imagen } = req.body;
 
+  // Configuración de los encabezados CORS
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://tmdb-by-micaelalozano.vercel.app"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
   Users.update({ imagen }, { where: { id } }).then((data) => {
     res.status(200).send(data);
   });
